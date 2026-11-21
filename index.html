@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Angren–Toshkent Taxi</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#f6f4ec;--card:rgba(255,255,255,.78);--tx:#16140c;--mut:#6d6a5c;--y:#ffc400;--y2:#ff9f00;--bd:rgba(0,0,0,.09);--inp:#fff;--sky:rgba(40,30,0,.1);--road:rgba(0,0,0,.12);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#0b0a06;--card:rgba(255,255,255,.06);--tx:#fff8e1;--mut:#a9a48c;--bd:rgba(255,196,0,.2);--inp:rgba(255,255,255,.07);--sky:rgba(255,196,0,.1);--road:rgba(255,255,255,.06);color-scheme:dark}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--tx);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg i{position:absolute;border-radius:50%;filter:blur(70px)}
+.bg i:nth-child(1){width:330px;height:330px;background:var(--y);top:-100px;right:-90px;opacity:.5;animation:f 12s ease-in-out infinite alternate}
+.bg i:nth-child(2){width:270px;height:270px;background:var(--y2);bottom:60px;left:-100px;opacity:.3;animation:f 15s ease-in-out infinite alternate-reverse}
+.bg:after{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--bd) 1px,transparent 1px),linear-gradient(90deg,var(--bd) 1px,transparent 1px);background-size:44px 44px;-webkit-mask-image:radial-gradient(circle at 50% 15%,#000,transparent 70%);mask-image:radial-gradient(circle at 50% 15%,#000,transparent 70%)}
+@keyframes f{to{transform:translate(40px,50px) scale(1.15)}}
+.skyl{position:absolute;left:0;bottom:46px;width:100%;height:150px;fill:var(--sky)}
+.road{position:absolute;left:0;right:0;bottom:0;height:46px;background:var(--road);border-top:2px solid var(--y)}
+.road span{position:absolute;top:21px;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--y) 50%,transparent 50%);background-size:56px 4px;animation:rd 1s linear infinite}
+@keyframes rd{to{background-position:-56px 0}}
+.car{position:absolute;bottom:20px;font-size:30px;transform:scaleX(-1);filter:drop-shadow(0 0 12px rgba(255,196,0,.7));animation:dr 9s linear infinite}
+@keyframes dr{from{left:-60px}to{left:105%}}
+main{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:18px 16px 110px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.logo{width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,var(--y),var(--y2));display:grid;place-items:center;font-size:25px;animation:pu 2.4s ease-in-out infinite}
+@keyframes pu{50%{box-shadow:0 0 0 10px rgba(255,196,0,0),0 8px 34px rgba(255,170,0,.7)}}
+h1{margin:0;font-size:22px;font-weight:800;background:linear-gradient(90deg,var(--tx),var(--y) 60%,var(--y2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+header p{margin:0;font-size:15px;font-weight:700;color:var(--tx)}
+.card{background:var(--card);border:1px solid var(--bd);border-top-color:rgba(255,196,0,.45);border-radius:26px;padding:16px;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 18px 50px rgba(0,0,0,.18)}
+.route{display:flex;align-items:center;gap:10px}
+.pt{flex:1;background:var(--inp);border:1px solid var(--bd);border-radius:16px;padding:10px 12px}
+.pt small{display:block;font-size:11px;color:var(--mut)}.pt b{font-size:18px}
+.swap{width:44px;height:44px;border-radius:50%;border:0;background:var(--y);color:#1a1400;font-size:19px;cursor:pointer;transition:transform .4s;box-shadow:0 6px 16px rgba(255,170,0,.45)}
+.swap.r{transform:rotate(180deg)}
+label{display:block;font-size:12px;color:var(--mut);margin:14px 0 5px;font-weight:600}
+input,textarea{width:100%;background:var(--inp);border:1px solid var(--bd);color:var(--tx);border-radius:14px;padding:13px;font:500 15px Inter,system-ui,sans-serif;outline:none;transition:.2s}
+input:focus,textarea:focus{border-color:var(--y);box-shadow:0 0 0 3px rgba(255,196,0,.25)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seats{display:flex;gap:8px}
+.seats button{flex:1;padding:12px 0;border-radius:12px;border:1px solid var(--bd);background:var(--inp);color:var(--tx);font:700 15px Inter,system-ui,sans-serif;cursor:pointer}
+.seats button.on{background:var(--y);color:#1a1400;border-color:var(--y)}
+.locbox{margin-top:16px;padding:12px;border:1px solid var(--bd);border-radius:18px;background:rgba(255,196,0,.06)}
+.locbox label{margin-top:0}
+.locbtn{display:block;width:100%;border:1.5px dashed var(--y);background:rgba(255,196,0,.1);color:var(--tx);border-radius:14px;padding:13px;font:700 14.5px Inter,system-ui,sans-serif;cursor:pointer}
+.locbtn.ok{border-style:solid;background:var(--y);color:#1a1400}
+.mapfr{width:100%;height:190px;border:0;border-radius:14px;margin-top:10px}
+.note{font-size:12.5px;color:var(--mut);margin-top:8px}
+.cta{display:block;position:relative;overflow:hidden;width:100%;margin-top:26px;border:0;border-radius:18px;padding:17px;font:800 16px Inter,system-ui,sans-serif;color:#1a1400;background:linear-gradient(135deg,var(--y),var(--y2));cursor:pointer;box-shadow:0 10px 28px rgba(255,170,0,.45)}
+.cta:after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);animation:sh 3s ease-in-out infinite}
+@keyframes sh{to{left:130%}}
+.cta:disabled{opacity:.6}
+.toast{position:fixed;left:50%;bottom:calc(70px + env(safe-area-inset-bottom,0px));transform:translate(-50%,160px);background:#1a1400;color:var(--y);padding:12px 18px;border-radius:14px;font-weight:700;font-size:14px;transition:.35s;z-index:9;border:1px solid var(--y);max-width:90%;text-align:center}
+.toast.s{transform:translate(-50%,0)}
+.done{position:fixed;inset:0;z-index:8;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}
+.done.s{display:flex;animation:in .4s both}
+@keyframes in{from{opacity:0;transform:scale(.96)}}
+.chk{width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,var(--y),var(--y2));display:grid;place-items:center;font-size:48px;margin-bottom:18px;box-shadow:0 0 60px rgba(255,170,0,.6)}
+.done h2{margin:0 0 8px;font-size:22px}.done p{margin:0 0 24px;color:var(--mut);font-size:14px}
+.done .cta{max-width:320px}
+.hide{display:none!important}.seats{flex-wrap:wrap}.tabs{display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:4px;margin-bottom:14px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}.tabs button{border:0;background:none;color:var(--mut);font:700 14px Inter,system-ui,sans-serif;padding:11px 4px;border-radius:12px;cursor:pointer;transition:.25s}.tabs button.on{background:linear-gradient(135deg,var(--y),var(--y2));color:#1a1400;box-shadow:0 6px 18px rgba(255,170,0,.35)}
+.row>div{min-width:0}input[type=date],input[type=time]{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;max-width:100%;height:44px;padding:0 10px;font-size:14px;line-height:44px;text-align:left}input::-webkit-date-and-time-value{text-align:left;min-height:1.2em;margin:0}input::-webkit-calendar-picker-indicator{opacity:.6;margin:0;padding:0}
+.top{text-align:center;font:800 8px Inter,system-ui,sans-serif;letter-spacing:.28em;text-transform:uppercase;color:var(--mut);margin:-6px 0 8px;opacity:.85}
+.lang{display:flex;gap:6px;width:100%;margin:0 0 14px;background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:5px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.lang button{flex:1;display:flex;align-items:center;justify-content:center;gap:9px;border:0;background:none;color:var(--tx);font:900 15px Inter,system-ui,sans-serif;letter-spacing:.04em;padding:12px 0;border-radius:12px;cursor:pointer;transition:background .2s,transform .15s}
+.lang button:active{transform:scale(.96)}
+.lang button.on{background:linear-gradient(135deg,var(--y),var(--y2));color:#1a1400;box-shadow:0 4px 16px rgba(255,170,0,.35)}
+.lang button *{pointer-events:none}
+.flag{position:relative;display:block;width:28px;height:19px;border-radius:3px;overflow:hidden;transform-origin:left center;box-shadow:0 1px 4px rgba(0,0,0,.35);animation:wv 1.7s ease-in-out infinite}
+.flag svg{display:block;width:100%;height:100%}
+.flag:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.18) 0,transparent 22%,rgba(255,255,255,.38) 45%,transparent 68%,rgba(0,0,0,.2) 100%);background-size:220% 100%;animation:sh 1.7s linear infinite}
+.lang button:nth-child(2) .flag,.lang button:nth-child(2) .flag:after{animation-delay:-.55s}
+.lang button:nth-child(3) .flag,.lang button:nth-child(3) .flag:after{animation-delay:-1.1s}
+@keyframes wv{0%,100%{transform:skewY(0) scaleX(1)}25%{transform:skewY(-6deg) scaleX(.93)}50%{transform:skewY(0) scaleX(1)}75%{transform:skewY(6deg) scaleX(.93)}}
+@keyframes sh{from{background-position:220% 0}to{background-position:-120% 0}}
+@media (prefers-reduced-motion:reduce){.flag,.flag:after{animation:none}}
+</style>
+</head>
+<body>
+<div class="bg"><i></i><i></i><svg class="skyl" viewBox="0 0 400 150" preserveAspectRatio="none"><path d="M0 150V90h20V60h24v30h14V40h26v50h18V70h22v20h16V30h28v60h20V75h24v15h18V50h26v40h20V65h22v25h24V45h30v45h20V80h26v70z"/></svg><div class="road"><span></span></div><div class="car">🚕</div></div>
+<main>
+<div class="lang" id="lang"><button data-l="uz"><span class="flag"><svg viewBox="0 0 60 40"><rect width="60" height="40" fill="#fff"/><rect width="60" height="13" fill="#0099B5"/><rect y="27" width="60" height="13" fill="#1EB53A"/><rect y="13" width="60" height="1.6" fill="#CE1126"/><rect y="25.4" width="60" height="1.6" fill="#CE1126"/><circle cx="10" cy="6.5" r="4" fill="#fff"/><circle cx="11.6" cy="6.5" r="3.4" fill="#0099B5"/><g fill="#fff"><circle cx="17" cy="3.5" r="1"/><circle cx="21" cy="3.5" r="1"/><circle cx="25" cy="3.5" r="1"/><circle cx="19" cy="7" r="1"/><circle cx="23" cy="7" r="1"/><circle cx="21" cy="10.2" r="1"/></g></svg></span>UZ</button><button data-l="ru"><span class="flag"><svg viewBox="0 0 60 40"><rect width="60" height="40" fill="#fff"/><rect y="13.33" width="60" height="13.34" fill="#0039A6"/><rect y="26.67" width="60" height="13.33" fill="#D52B1E"/></svg></span>RU</button><button data-l="en"><span class="flag"><svg viewBox="0 0 60 40"><rect width="60" height="40" fill="#012169"/><path d="M0 0L60 40M60 0L0 40" stroke="#fff" stroke-width="8"/><path d="M0 0L60 40M60 0L0 40" stroke="#C8102E" stroke-width="3"/><path d="M30 0V40M0 20H60" stroke="#fff" stroke-width="13"/><path d="M30 0V40M0 20H60" stroke="#C8102E" stroke-width="8"/></svg></span>EN</button></div>
+<header><div><p data-k="sub">Taksini bir zumda buyurtma qiling</p></div></header>
+<div class="tabs" id="tabs"><button class="on" data-t="odam" data-k="t1">🚕 Odam</button><button data-t="pochta" data-k="t2">📦 Pochta</button><button data-t="yuk" data-k="t3">🚚 Yuk</button></div>
+<div class="card">
+<div class="route"><div class="pt"><small data-k="from">Qayerdan</small><b id="from">Angren</b></div><button class="swap" id="swap" aria-label="Almashtirish">⇄</button><div class="pt"><small data-k="to">Qayerga</small><b id="to">Toshkent</b></div></div>
+<label data-k="name">Ismingiz</label><input id="name" placeholder="Masalan: Aziz" data-p="ph1">
+<label data-k="phone">Telefon</label><input id="phone" type="tel" inputmode="tel" placeholder="+998 90 123 45 67">
+<div class="row"><div><label data-k="date">Sana</label><input id="date" type="date"></div><div><label data-k="time">Vaqt</label><input id="time" type="time"></div></div>
+<div id="g-odam"><label data-k="seats">Yo‘lovchilar soni</label><div class="seats" id="seats"><button class="on">1</button><button>2</button><button>3</button><button>4</button></div></div><div id="g-dost" class="hide"><label data-k="item">Nima jo‘natiladi?</label><input id="item" placeholder="Masalan: hujjat, kiyim, mebel..." data-p="ph4"><label data-k="size">Hajmi</label><div class="seats" id="sizes"></div><div class="row"><div><label data-k="rcv">Qabul qiluvchi</label><input id="rname" placeholder="Ismi" data-p="ph5"></div><div><label data-k="rph">Telefoni</label><input id="rphone" type="tel" inputmode="tel" placeholder="+998"></div></div></div>
+<label data-k="price">Narx (so‘m)</label><input id="price" type="number" inputmode="numeric" value="60000">
+<label data-k="note">Manzil / izoh</label><textarea id="note" rows="2" placeholder="Qaysi ko‘cha, mo‘ljal..." data-p="ph2"></textarea>
+<div class="locbox"><label data-k="loc">Lokatsiya</label><button type="button" class="locbtn" id="loc">📍 Joylashuvimni biriktirish</button><div id="mapbox"></div><div class="note" id="locnote"></div><input id="link" style="margin-top:10px" placeholder="yoki xarita havolasini joylang" data-p="ph3"></div>
+<button class="cta" id="send">Taksi buyurtma qilish</button>
+</div>
+</main>
+<div class="done" id="done"><div class="chk">✅</div><h2 data-k="d1">Buyurtma yuborildi</h2><p data-k="d2">Haydovchilar tez orada siz bilan bog‘lanadi.<br>Telefoningizni yoqilgan holda qoldiring.</p><button class="cta" id="again" data-k="d3">Yangi buyurtma</button></div>
+<div class="toast" id="toast"></div>
+<script>
+var API_URL=""; // Cloudflare Worker manzili, masalan: https://taxi-bot.ISM.workers.dev
+var tg=window.Telegram&&Telegram.WebApp;
+if(tg){tg.ready();tg.expand();try{tg.setHeaderColor("#0b0a06");tg.setBackgroundColor("#0b0a06")}catch(e){}}
+var $=function(i){return document.getElementById(i)},seats=1,loc=null;
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k)||"";localStorage.setItem(k,v)}catch(e){return ""}}
+function toast(t){var e=$("toast");e.textContent=t;e.classList.add("s");setTimeout(function(){e.classList.remove("s")},2800)}
+var u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user;
+$("name").value=ls("n")||(u&&u.first_name)||"";$("phone").value=ls("p");
+var sw=0;
+var T={uz:{sub:"Taksini bir zumda buyurtma qiling",from:"Qayerdan",to:"Qayerga",cA:"Angren",cT:"Toshkent",t1:"🚕 Odam",t2:"📦 Pochta",t3:"🚚 Yuk",name:"Ismingiz",phone:"Telefon",date:"Sana",time:"Vaqt",seats:"Yo‘lovchilar soni",price:"Narx (so‘m)",note:"Manzil / izoh",loc:"Lokatsiya",item:"Nima jo‘natiladi?",size:"Hajmi",rcv:"Qabul qiluvchi",rph:"Telefoni",ph1:"Masalan: Aziz",ph2:"Qaysi ko‘cha, mo‘ljal...",ph3:"yoki xarita havolasini joylang",ph4:"Masalan: hujjat, kiyim, mebel...",ph5:"Ismi",d1:"Buyurtma yuborildi",d2:"Haydovchilar tez orada siz bilan bog‘lanadi.<br>Telefoningizni yoqilgan holda qoldiring.",d3:"Yangi buyurtma",b_odam:"Taksi buyurtma qilish",b_pochta:"Pochta buyurtma qilish",b_yuk:"Yuk mashinasini chaqirish",sz_pochta:"Hujjat|Kichik|O‘rta",sz_yuk:"~100 kg|~500 kg|~1 tonna|1 t+",locb:"📍 Joylashuvimni biriktirish",locw:"Aniqlanmoqda...",loco:"✅ Lokatsiya biriktirildi",acc:"Aniqlik",gps:'GPS ruxsat berilmadi. <a target="_blank" rel="noopener" style="color:var(--y2);font-weight:700" href="https://www.google.com/maps">Xaritada joyingizni belgilab</a>, havolani pastga joylang.',e_nogeo:"Lokatsiya qo‘llab-quvvatlanmaydi",e_link:"Havolani qo‘lda joylang",e_nm:"Ism va telefonni kiriting",e_tm:"Vaqtni tanlang",e_it:"Nima jo‘natilishini yozing",e_loc:"Lokatsiya yoki manzil kiriting",e_srv:"Server hali ulanmagan",sending:"Yuborilmoqda...",e_min:"Minimal narx",e_fail:"Yuborilmadi. Qayta urinib ko‘ring"},
+ru:{sub:"Закажите такси за секунду",from:"Откуда",to:"Куда",cA:"Ангрен",cT:"Ташкент",t1:"🚕 Пассажир",t2:"📦 Посылка",t3:"🚚 Груз",name:"Ваше имя",phone:"Телефон",date:"Дата",time:"Время",seats:"Количество пассажиров",price:"Цена (сум)",note:"Адрес / комментарий",loc:"Геолокация",item:"Что отправляем?",size:"Размер",rcv:"Получатель",rph:"Телефон",ph1:"Например: Азиз",ph2:"Улица, ориентир...",ph3:"или вставьте ссылку на карту",ph4:"Например: документы, одежда, мебель...",ph5:"Имя",d1:"Заказ отправлен",d2:"Водители скоро свяжутся с вами.<br>Не выключайте телефон.",d3:"Новый заказ",b_odam:"Заказать такси",b_pochta:"Заказать доставку посылки",b_yuk:"Вызвать грузовик",sz_pochta:"Документ|Малая|Средняя",sz_yuk:"~100 кг|~500 кг|~1 тонна|1 т+",locb:"📍 Прикрепить мою геолокацию",locw:"Определяем...",loco:"✅ Геолокация прикреплена",acc:"Точность",gps:'Нет доступа к GPS. <a target="_blank" rel="noopener" style="color:var(--y2);font-weight:700" href="https://www.google.com/maps">Отметьте точку на карте</a> и вставьте ссылку ниже.',e_nogeo:"Геолокация не поддерживается",e_link:"Вставьте ссылку вручную",e_nm:"Введите имя и телефон",e_tm:"Выберите время",e_it:"Укажите, что отправляем",e_loc:"Укажите геолокацию или адрес",e_srv:"Сервер ещё не подключён",sending:"Отправляем...",e_min:"Минимальная цена",e_fail:"Не отправлено. Попробуйте ещё раз"},
+en:{sub:"Book your taxi in a second",from:"From",to:"To",cA:"Angren",cT:"Tashkent",t1:"🚕 Passenger",t2:"📦 Parcel",t3:"🚚 Cargo",name:"Your name",phone:"Phone",date:"Date",time:"Time",seats:"Number of passengers",price:"Price (UZS)",note:"Address / note",loc:"Location",item:"What are you sending?",size:"Size",rcv:"Recipient",rph:"Phone",ph1:"E.g.: Aziz",ph2:"Street, landmark...",ph3:"or paste a map link",ph4:"E.g.: documents, clothes, furniture...",ph5:"Name",d1:"Order sent",d2:"Drivers will contact you soon.<br>Keep your phone on.",d3:"New order",b_odam:"Book a taxi",b_pochta:"Order parcel delivery",b_yuk:"Call a cargo truck",sz_pochta:"Document|Small|Medium",sz_yuk:"~100 kg|~500 kg|~1 ton|1 t+",locb:"📍 Attach my location",locw:"Locating...",loco:"✅ Location attached",acc:"Accuracy",gps:'GPS access denied. <a target="_blank" rel="noopener" style="color:var(--y2);font-weight:700" href="https://www.google.com/maps">Mark your spot on the map</a> and paste the link below.',e_nogeo:"Location is not supported",e_link:"Paste the link manually",e_nm:"Enter your name and phone",e_tm:"Select a time",e_it:"Say what you are sending",e_loc:"Enter a location or address",e_srv:"Server is not connected yet",sending:"Sending...",e_min:"Minimum price",e_fail:"Not sent. Please try again"}};
+var L=ls("l")||((function(c){c=c||"";return c.indexOf("ru")==0?"ru":c.indexOf("en")==0?"en":"uz"})(u&&u.language_code));
+function tr(k){return (T[L]&&T[L][k])||T.uz[k]||k}
+function cities(){$("from").textContent=tr(sw?"cT":"cA");$("to").textContent=tr(sw?"cA":"cT")}
+function apply(){document.documentElement.lang=L;[].forEach.call(document.querySelectorAll("[data-k]"),function(e){e.innerHTML=tr(e.dataset.k)});[].forEach.call(document.querySelectorAll("[data-p]"),function(e){e.placeholder=tr(e.dataset.p)});cities();[].forEach.call($("lang").children,function(b){b.classList.toggle("on",b.dataset.l==L)});$("send").textContent=tr("b_"+type);$("send").dataset.l=tr("b_"+type);if(!loc)$("loc").textContent=tr("locb");buildSz()}
+$("date").value=new Date().toISOString().slice(0,10);
+$("swap").onclick=function(){$("swap").classList.toggle("r");sw=1-sw;cities();if(tg)tg.HapticFeedback.impactOccurred("light")};
+$("seats").onclick=function(e){if(e.target.tagName!="BUTTON")return;[].forEach.call($("seats").children,function(b){b.classList.remove("on")});e.target.classList.add("on");seats=+e.target.textContent};
+$("loc").onclick=function(){
+ if(!navigator.geolocation){toast(tr("e_nogeo"));return}
+ $("loc").textContent=tr("locw");
+ navigator.geolocation.getCurrentPosition(function(p){
+  loc={lat:+p.coords.latitude.toFixed(5),lng:+p.coords.longitude.toFixed(5),acc:Math.round(p.coords.accuracy)};
+  $("loc").textContent=tr("loco");$("loc").classList.add("ok");
+  var b=.004,x=loc.lng,y=loc.lat;
+  $("mapbox").innerHTML='<iframe class="mapfr" src="https://www.openstreetmap.org/export/embed.html?bbox='+(x-b)+'%2C'+(y-b)+'%2C'+(x+b)+'%2C'+(y+b)+'&layer=mapnik&marker='+y+'%2C'+x+'"></iframe>';
+  $("locnote").textContent=tr("acc")+": ±"+loc.acc+" m";
+ },function(){
+  $("loc").textContent=tr("locb");
+  $("locnote").innerHTML=tr("gps");
+  $("link").focus();toast(tr("e_link"))
+ },{enableHighAccuracy:true,timeout:10000});
+};
+$("send").onclick=function(){
+ var o={from:sw?"Toshkent":"Angren",to:sw?"Angren":"Toshkent",lang:L,name:$("name").value.trim(),phone:$("phone").value.trim(),date:$("date").value,time:$("time").value,type:type,seats:seats,item:$("item").value.trim(),size:size,rname:$("rname").value.trim(),rphone:$("rphone").value.trim(),price:+$("price").value||0,note:$("note").value.trim(),loc:loc,link:$("link").value.trim()};
+ if(!o.name||o.phone.replace(/\D/g,"").length<9){toast(tr("e_nm"));return}
+ if(!o.time){toast(tr("e_tm"));return}
+ if(type!=="odam"&&!o.item){toast(tr("e_it"));return}
+ if(!o.loc&&!o.link&&!o.note){toast(tr("e_loc"));return}
+ if(MN[type]&&o.price<MN[type]){toast(tr("e_min")+": "+String(MN[type]).replace(/\B(?=(\d{3})+$)/g," "));return}
+ if(!API_URL){toast(tr("e_srv"));return}
+ ls("n",o.name);ls("p",o.phone);
+ var b=$("send");b.disabled=true;b.textContent=tr("sending");
+ fetch(API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({initData:tg?tg.initData:"",order:o})})
+ .then(function(r){return r.json()}).then(function(j){
+  if(!j.ok)throw 0;
+  $("done").classList.add("s");if(tg)tg.HapticFeedback.notificationOccurred("success");
+ }).catch(function(){toast(tr("e_fail"))})
+ .then(function(){b.disabled=false;b.textContent=$("send").dataset.l||"Taksi buyurtma qilish"});
+};
+var type="odam",size="";
+var SZ={pochta:["Hujjat","Kichik","O‘rta"],yuk:["~100 kg","~500 kg","~1 tonna","1 t+"]},PR={odam:60000,pochta:40000,yuk:150000},MN={odam:60000,pochta:40000},TX={odam:"Taksi buyurtma qilish",pochta:"Pochta buyurtma qilish",yuk:"Yuk mashinasini chaqirish"};
+function buildSz(){if(type=="odam")return;var a=tr("sz_"+type).split("|");size=T.uz["sz_"+type].split("|")[0];$("sizes").innerHTML=a.map(function(s,i){return "<button"+(i?"":' class="on"')+">"+s+"</button>"}).join("")}
+$("tabs").onclick=function(e){var t=e.target.dataset.t;if(!t)return;type=t;[].forEach.call($("tabs").children,function(b){b.classList.toggle("on",b.dataset.t==t)});$("g-odam").classList.toggle("hide",t!="odam");$("g-dost").classList.toggle("hide",t=="odam");$("price").value=PR[t];$("send").textContent=tr("b_"+t);$("send").dataset.l=tr("b_"+t);buildSz();if(tg)tg.HapticFeedback.selectionChanged()};
+$("sizes").onclick=function(e){if(e.target.tagName!="BUTTON")return;[].forEach.call($("sizes").children,function(b){b.classList.remove("on")});e.target.classList.add("on");size=T.uz["sz_"+type].split("|")[[].indexOf.call($("sizes").children,e.target)]};
+$("again").onclick=function(){$("done").classList.remove("s")};
+$("lang").onclick=function(e){var b=e.target.closest("button");var l=b&&b.dataset.l;if(!l)return;L=l;ls("l",l);apply()};
+apply();
+</script>
+</body>
+</html>
